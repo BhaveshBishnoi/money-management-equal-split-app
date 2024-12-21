@@ -100,7 +100,9 @@ function App() {
       <div>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Balances</h2>
         {equalizeExpenses().map(({ name, balance }) => (
-          <p key={name} className="text-gray-600">{name}: {balance.toFixed(2)}</p>
+          <p key={name} className="text-gray-600">
+            {name}: {balance.toFixed(2)} (Total Spent: {members.find(member => member.name === name)?.totalSpent.toFixed(2)})
+          </p>
         ))}
       </div>
     </div>
