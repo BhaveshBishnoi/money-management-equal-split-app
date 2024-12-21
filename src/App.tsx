@@ -100,8 +100,13 @@ function App() {
       <div>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Balances</h2>
         {equalizeExpenses().map(({ name, balance }) => (
-          <p key={name} className="text-gray-600">{name}: {balance.toFixed(2)}</p>
+          <p key={name} className="text-gray-600">
+            {name}: {balance.toFixed(2)}
+          </p>
         ))}
+        <p className="font-bold text-gray-800 mt-4">
+          Total Spend of all Members: {members.reduce((acc, member) => acc + member.totalSpent, 0).toFixed(2)}
+        </p>
       </div>
     </div>
   );
