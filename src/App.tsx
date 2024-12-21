@@ -8,6 +8,7 @@ interface Member {
 interface Expense {
   amount: number;
   members: string[];
+  paidBy: string;
 }
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [newMemberName, setNewMemberName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState<number | ''>('');
+  const [paidBy, setPaidBy] = useState<string>('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
   const addMember = () => {
@@ -25,10 +27,10 @@ function App() {
   };
 
   const addExpense = () => {
-    if (newExpenseAmount && selectedMembers.length > 0) {
+    if (newExpenseAmount && selectedMembers.length > 0 && paidBy) {
       const amount = Number(newExpenseAmount);
       const splitAmount = amount / selectedMembers.length;
-      setExpenses([...expenses, { amount, members: selectedMembers }]);
+      setExpenses([...expenses, { amount, members: selectedMembers, paidBy }]);
       setMembers(members.map(member => 
         selectedMembers.includes(member.name) 
           ? { ...member, totalSpent: member.totalSpent + splitAmount }
@@ -36,6 +38,7 @@ function App() {
       ));
       setNewExpenseAmount('');
       setSelectedMembers([]);
+      setPaidBy('');
     }
   };
 
@@ -73,6 +76,16 @@ function App() {
           onChange={(e) => setNewExpenseAmount(e.target.value ? parseFloat(e.target.value) : '')} 
           className="p-3 border border-gray-300 rounded-lg mb-2 sm:mb-0 sm:mr-2 w-full sm:w-3/4"
         />
+        <select 
+          value={paidBy} 
+          onChange={(e) => setPaidBy(e.target.value)} 
+          className="p-3 border border-gray-300 rounded-lg mb-2 sm:mb-0 sm:mr-2 w-full sm:w-3/4"
+        >
+          <option value="">Paid By</option>
+          {members.map(member => (
+            <option key={member.name} value={member.name}>{member.name}</option>
+          ))}
+        </select>
         <button 
           onClick={addExpense} 
           className="text-sm text-nowrap p-3 bg-black text-white rounded-lg hover:bg-gray-800 transition w-full sm:w-auto"
@@ -80,33 +93,64 @@ function App() {
           Add Expense
         </button>
       </div>
-      <div className="mb-4">
-        {members.map(member => (
-          <label key={member.name} className="block">
-            <input 
-              type="checkbox" 
-              checked={selectedMembers.includes(member.name)} 
-              onChange={() => {
-                setSelectedMembers(selectedMembers.includes(member.name)
-                  ? selectedMembers.filter(name => name !== member.name)
-                  : [...selectedMembers, member.name]);
-              }} 
-              className="mr-2"
-            />
-            {member.name}
-          </label>
-        ))}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">Select Members to Split Expense</h2>
+        <div className="p-3 mb-2 w-full">
+          {members.map(member => (
+            <div key={member.name} className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                id={member.name}
+                value={member.name}
+                checked={selectedMembers.includes(member.name)}
+                onChange={(e) => {
+                  const selected = e.target.checked
+                    ? [...selectedMembers, member.name]
+                    : selectedMembers.filter(name => name !== member.name);
+                  setSelectedMembers(selected);
+                }}
+                className="mr-2"
+              />
+              <label htmlFor={member.name} className="text-gray-700">{member.name}</label>
+            </div>
+          ))}
+        </div>
       </div>
-      <div>
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Balances</h2>
-        {equalizeExpenses().map(({ name, balance }) => (
-          <p key={name} className="text-gray-600">
-            {name}: {balance.toFixed(2)}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">Expenses</h2>
+        <table className="min-w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th className="border border-gray-300 p-2">Name</th>
+              <th className="border border-gray-300 p-2">Split Amount</th>
+              <th className="border border-gray-300 p-2">Paid Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {members.map(member => (
+              <tr key={member.name}>
+                <td className="border border-gray-300 p-2">{member.name}</td>
+                <td className="border border-gray-300 p-2">
+                  {expenses.reduce((acc, expense) => 
+                    expense.members.includes(member.name) 
+                      ? acc + (expense.amount / expense.members.length) 
+                      : acc, 0).toFixed(2)}
+                </td>
+                <td className="border border-gray-300 p-2">
+                  {expenses.reduce((acc, expense) => 
+                    expense.paidBy === member.name 
+                      ? acc + expense.amount 
+                      : acc, 0).toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="mt-4">
+          <p className="font-bold text-gray-800">
+            Total Paid Amount: {expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}
           </p>
-        ))}
-        <p className="font-bold text-gray-800 mt-4">
-          Total Spend of all Members: {members.reduce((acc, member) => acc + member.totalSpent, 0).toFixed(2)}
-        </p>
+        </div>
       </div>
     </div>
   );
