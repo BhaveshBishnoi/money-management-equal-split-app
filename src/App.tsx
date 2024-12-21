@@ -87,7 +87,7 @@ function App() {
       </div>
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Select Members to Split Expense</h2>
-        <div className="p-3 mb-2 w-full">
+        <div className="p-2 w-full">
           {members.map(member => (
             <div key={member.name} className="flex items-center mb-2">
               <input
