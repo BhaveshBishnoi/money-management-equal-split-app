@@ -27,7 +27,7 @@ function App() {
   };
 
   const addExpense = () => {
-    if (newExpenseAmount && selectedMembers.length > 0) {
+    if (newExpenseAmount && selectedMembers.length > 0 && paidBy) {
       const amount = Number(newExpenseAmount);
       const splitAmount = amount / selectedMembers.length;
       setExpenses([...expenses, { amount, members: selectedMembers, paidBy }]);
@@ -119,19 +119,23 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {expenses.map((expense, index) => (
-              <tr key={index}>
-                <td className="border border-gray-300 p-2">{expense.paidBy}</td>
-                <td className="border border-gray-300 p-2">{(expense.amount / expense.members.length).toFixed(2)}</td>
-                <td className="border border-gray-300 p-2">{expense.amount.toFixed(2)}</td>
-              </tr>
-            ))}
+            {members.map(member => {
+              const totalPaid = expenses.reduce((acc, expense) => 
+                expense.paidBy === member.name ? acc + expense.amount : acc, 0);
+              const totalSplit = expenses.reduce((acc, expense) => 
+                expense.members.includes(member.name) ? acc + (expense.amount / expense.members.length) : acc, 0);
+
+              return (
+                <tr key={member.name}>
+                  <td className="border border-gray-300 p-2">{member.name}</td>
+                  <td className="border border-gray-300 p-2">{totalSplit.toFixed(2)}</td>
+                  <td className="border border-gray-300 p-2">{totalPaid.toFixed(2)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div className="mt-4">
-          <p className="font-bold text-gray-800">
-            Total Split Amount: {expenses.reduce((acc, expense) => acc + (expense.amount / expense.members.length), 0).toFixed(2)}
-          </p>
           <p className="font-bold text-gray-800">
             Total Paid Amount: {expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}
           </p>
