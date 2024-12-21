@@ -141,9 +141,10 @@ function App() {
           </p>
         </div>
       </div>
+      <p className='text-center'>Made with ❤️ by <a href='https://instagram.com/bhavesh_bishnoi' target='_blank'>Bhavesh</a> </p>
     </div>
 
-    <p>Made with ❤️ by <a href='https://instagram.com/bhavesh_bishnoi' target='_blank'>Bhavesh</a> </P>
+   
   );
 }
 
