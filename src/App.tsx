@@ -40,12 +40,11 @@ function App() {
   };
 
   const equalizeExpenses = () => {
-    const totalSpent = members.reduce((acc, member) => acc + member.totalSpent, 0);
-    const averageSpent = totalSpent / members.length;
-    return members.map(member => ({
+    const balances = members.map(member => ({
       name: member.name,
-      balance: member.totalSpent - averageSpent
+      balance: member.totalSpent,
     }));
+    return balances;
   };
 
   return (
@@ -100,8 +99,8 @@ function App() {
       </div>
       <div>
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Balances</h2>
-        {members.map(({ name, totalSpent }) => (
-          <p key={name} className="text-gray-600">{name}: {totalSpent.toFixed(2)}</p>
+        {equalizeExpenses().map(({ name, balance }) => (
+          <p key={name} className="text-gray-600">{name}: {balance.toFixed(2)}</p>
         ))}
       </div>
     </div>
