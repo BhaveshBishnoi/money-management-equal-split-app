@@ -142,6 +142,8 @@ function App() {
         </div>
       </div>
     </div>
+
+    <p>Made with ❤️ by <a href='https://instagram.com/bhavesh_bishnoi' target='_blank'>Bhavesh</a> </P>
   );
 }
 
