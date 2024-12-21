@@ -27,7 +27,7 @@ function App() {
   };
 
   const addExpense = () => {
-    if (newExpenseAmount && selectedMembers.length > 0 && paidBy) {
+    if (newExpenseAmount && selectedMembers.length > 0) {
       const amount = Number(newExpenseAmount);
       const splitAmount = amount / selectedMembers.length;
       setExpenses([...expenses, { amount, members: selectedMembers, paidBy }]);
@@ -40,14 +40,6 @@ function App() {
       setSelectedMembers([]);
       setPaidBy('');
     }
-  };
-
-  const equalizeExpenses = () => {
-    const balances = members.map(member => ({
-      name: member.name,
-      balance: member.totalSpent,
-    }));
-    return balances;
   };
 
   return (
@@ -127,26 +119,19 @@ function App() {
             </tr>
           </thead>
           <tbody>
-            {members.map(member => (
-              <tr key={member.name}>
-                <td className="border border-gray-300 p-2">{member.name}</td>
-                <td className="border border-gray-300 p-2">
-                  {expenses.reduce((acc, expense) => 
-                    expense.members.includes(member.name) 
-                      ? acc + (expense.amount / expense.members.length) 
-                      : acc, 0).toFixed(2)}
-                </td>
-                <td className="border border-gray-300 p-2">
-                  {expenses.reduce((acc, expense) => 
-                    expense.paidBy === member.name 
-                      ? acc + expense.amount 
-                      : acc, 0).toFixed(2)}
-                </td>
+            {expenses.map((expense, index) => (
+              <tr key={index}>
+                <td className="border border-gray-300 p-2">{expense.paidBy}</td>
+                <td className="border border-gray-300 p-2">{(expense.amount / expense.members.length).toFixed(2)}</td>
+                <td className="border border-gray-300 p-2">{expense.amount.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className="mt-4">
+          <p className="font-bold text-gray-800">
+            Total Split Amount: {expenses.reduce((acc, expense) => acc + (expense.amount / expense.members.length), 0).toFixed(2)}
+          </p>
           <p className="font-bold text-gray-800">
             Total Paid Amount: {expenses.reduce((acc, expense) => acc + expense.amount, 0).toFixed(2)}
           </p>
